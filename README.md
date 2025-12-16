@@ -1,8 +1,30 @@
-# Platform GitOps (Multi-Cloud: AWS / GCP)
+# 🚀 Platform GitOps (Multi-Cloud: AWS / GCP)
 
 ArgoCD App-of-Apps 패턴을 사용한 멀티 클라우드 GitOps 매니페스트
 
-## 디렉토리 구조
+## 🏛️ 아키텍처
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ArgoCD App-of-Apps Pattern                        │
+├─────────────────────────────────┬───────────────────────────────────┤
+│         AWS (Primary)           │          GCP (DR/Secondary)       │
+├─────────────────────────────────┼───────────────────────────────────┤
+│  aws/apps/                      │  gcp/apps/                        │
+│  ├── platform-apps.yaml         │  ├── platform-apps.yaml           │
+│  └── petclinic-app.yaml         │  └── petclinic-app.yaml           │
+├─────────────────────────────────┼───────────────────────────────────┤
+│  aws/platform/                  │  gcp/platform/                    │
+│  ├── alb-controller/            │  ├── external-secrets/            │
+│  ├── efs-csi-driver/            │  └── argocd-ingress/              │
+│  ├── external-secrets/          │                                   │
+│  ├── karpenter/                 │                                   │
+│  ├── karpenter-config/          │                                   │
+│  └── argocd-ingress/            │                                   │
+└─────────────────────────────────┴───────────────────────────────────┘
+```
+
+## 📁 디렉토리 구조
 
 ```
 platform-gitops-test/
@@ -31,7 +53,7 @@ platform-gitops-test/
         └── external-secret.yaml # DB Secret 참조
 ```
 
-## AWS vs GCP 컴포넌트 비교
+## ☁️ AWS vs GCP 컴포넌트 비교
 
 | 컴포넌트 | AWS | GCP | 비고 |
 |---------|-----|-----|------|
@@ -41,7 +63,7 @@ platform-gitops-test/
 | **Secrets** | External Secrets (AWS SM) | External Secrets (GCP SM) | Workload Identity |
 | **Ingress** | ALB Ingress | GKE Ingress | 각 클라우드 네이티브 |
 
-## Sync Wave 순서
+## 📊 Sync Wave 순서
 
 ### AWS
 ```
@@ -59,7 +81,7 @@ Wave 10 → ArgoCD Ingress
 Wave 15 → PetClinic Application
 ```
 
-## External Secrets 설정
+## 🔐 External Secrets 설정
 
 ### AWS (IRSA)
 ```yaml
@@ -75,16 +97,16 @@ serviceAccount:
     iam.gke.io/gcp-service-account: "SA_NAME@PROJECT_ID.iam.gserviceaccount.com"
 ```
 
-## ArgoCD 설정
+## ⚙️ ArgoCD 설정
 
 ArgoCD Bootstrap 시 클라우드에 따라 다른 gitops_path 사용:
 
-| Cloud | GitOps Path |
-|-------|-------------|
-| AWS | `aws/apps` |
-| GCP | `gcp/apps` |
+| Cloud | GitOps Path | 설명 |
+|-------|-------------|------|
+| AWS | `aws/apps` | AWS 플랫폼 컴포넌트 + PetClinic |
+| GCP | `gcp/apps` | GCP 플랫폼 컴포넌트 + PetClinic |
 
-## 사용 방법
+## 🚀 사용 방법
 
 ### 1. ArgoCD 접속
 ```bash
@@ -104,14 +126,14 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 ArgoCD는 자동으로 `platform-apps.yaml`과 `petclinic-app.yaml`을 동기화합니다.
 
-## DR 시나리오
+## 🔄 DR 시나리오
 
 ### AWS → GCP Failover
 
 1. GCP Terraform Apply (foundation → compute → bootstrap)
 2. ArgoCD가 자동으로 `gcp/apps/*` 동기화
 3. DNS 또는 Global Load Balancer를 GCP로 전환
-4. PetClinic이 AWS RDS에 Cross-Cloud 접근
+4. PetClinic이 GCP Cloud SQL에 접근 (각 클라우드 별도 DB)
 
 ### GCP → AWS Failback
 
@@ -119,7 +141,25 @@ ArgoCD는 자동으로 `platform-apps.yaml`과 `petclinic-app.yaml`을 동기화
 2. DNS를 AWS로 전환
 3. GCP 리소스 정리 (선택사항)
 
-## 관련 저장소
+## 🐳 컨테이너 레지스트리
 
-- **platform-dev-test**: Terraform/Terragrunt IaC 코드
-- **petclinic-gitops**: PetClinic 애플리케이션 Kubernetes 매니페스트
+| 클라우드 | 레지스트리 | 리전 |
+|---------|-----------|------|
+| **AWS** | ECR | ap-northeast-2 |
+| **GCP** | Artifact Registry | asia-northeast3 |
+
+```bash
+# AWS ECR
+946775837287.dkr.ecr.ap-northeast-2.amazonaws.com/petclinic-msa/petclinic-*
+
+# GCP Artifact Registry
+asia-northeast3-docker.pkg.dev/kdt2-final-project-t1/petclinic-msa/petclinic-*
+```
+
+## 🔗 관련 저장소
+
+| 저장소 | 설명 |
+|--------|------|
+| **platform-dev-test** | Terraform/Terragrunt IaC 코드 (EKS, GKE, VPC) |
+| **petclinic-gitops** | PetClinic 애플리케이션 Kubernetes 매니페스트 |
+| **petclinic-dev** | PetClinic 소스 코드 + Multi-Cloud CI/CD |
