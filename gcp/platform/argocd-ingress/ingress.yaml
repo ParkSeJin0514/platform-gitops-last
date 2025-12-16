@@ -1,0 +1,51 @@
+# ============================================================================
+# ArgoCD Ingress - GKE Ingress (External HTTP(S) Load Balancer)
+# ============================================================================
+# GKE에서는 ALB Controller 대신 기본 GKE Ingress 사용
+# annotations으로 Cloud Load Balancer 설정
+# ============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    # GKE Ingress 클래스 사용
+    kubernetes.io/ingress.class: "gce"
+    # 외부 로드밸런서 사용
+    kubernetes.io/ingress.global-static-ip-name: ""
+    # Backend 서비스 설정
+    cloud.google.com/backend-config: '{"default": "argocd-backend-config"}'
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80
+
+---
+# ============================================================================
+# BackendConfig - Health Check 및 타임아웃 설정
+# ============================================================================
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: argocd-backend-config
+  namespace: argocd
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /healthz
+    port: 8080
+  timeoutSec: 300
+  connectionDraining:
+    drainingTimeoutSec: 60

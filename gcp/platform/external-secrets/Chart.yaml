@@ -1,0 +1,14 @@
+# ============================================================================
+# platform-gitops-test/gcp/platform/external-secrets/Chart.yaml
+# ============================================================================
+apiVersion: v2
+name: external-secrets-gcp
+description: External Secrets Operator with GCP Secret Manager
+type: application
+version: 1.0.0
+appVersion: "0.10.7"
+
+dependencies:
+  - name: external-secrets
+    version: "0.10.7"
+    repository: "https://charts.external-secrets.io"

@@ -1,0 +1,32 @@
+# ============================================================================
+# platform-gitops-test/gcp/apps/petclinic-app.yaml
+# ============================================================================
+# PetClinic Application 배포 (GCP DR 환경)
+# ============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: petclinic
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"  # Platform 컴포넌트 후에 배포
+  labels:
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ParkSeJin0514/petclinic-gitops.git
+    targetRevision: main
+    path: "."
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: petclinic
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

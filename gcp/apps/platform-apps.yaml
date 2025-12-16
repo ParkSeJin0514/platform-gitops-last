@@ -1,0 +1,73 @@
+# ============================================================================
+# platform-gitops-test/gcp/apps/platform-apps.yaml
+# ============================================================================
+# GCP Platform 컴포넌트 관리 ApplicationSet
+# GKE Autopilot 환경에서는 다음이 불필요:
+#   - ALB Controller (GKE Ingress 사용)
+#   - EFS CSI Driver (필요시 GCS 또는 Filestore 사용)
+#   - Karpenter (Autopilot 자동 스케일링)
+#
+# Sync Wave:
+#   Wave 1: External Secrets (인프라)
+#   Wave 10: ArgoCD Ingress
+# ============================================================================
+
+# ============================================================================
+# Wave 1: External Secrets Operator
+# ============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+    targetRevision: main
+    path: gcp/platform/external-secrets
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-secrets
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+
+---
+# ============================================================================
+# Wave 10: ArgoCD Ingress (GKE Ingress)
+# ============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+    targetRevision: main
+    path: gcp/platform/argocd-ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

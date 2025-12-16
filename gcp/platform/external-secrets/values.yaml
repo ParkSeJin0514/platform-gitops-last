@@ -1,0 +1,36 @@
+# ============================================================================
+# platform-gitops-test/gcp/platform/external-secrets/values.yaml
+# ============================================================================
+# GCP Secret Manager 연결을 위한 External Secrets 설정
+# Workload Identity를 사용하여 GCP Secret Manager에 접근
+# ============================================================================
+
+external-secrets:
+  installCRDs: true
+
+  serviceAccount:
+    create: true
+    name: external-secrets-sa
+    annotations:
+      # GKE Workload Identity 설정
+      # Terraform compute 모듈에서 생성한 Service Account와 매핑
+      iam.gke.io/gcp-service-account: "petclinic-dr-external-secrets@kdt2-final-project-t1.iam.gserviceaccount.com"
+
+  webhook:
+    serviceAccount:
+      create: false
+      name: external-secrets-sa
+
+  certController:
+    serviceAccount:
+      create: false
+      name: external-secrets-sa
+
+  # 리소스 제한
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
