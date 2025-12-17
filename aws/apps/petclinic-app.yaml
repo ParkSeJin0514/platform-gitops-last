@@ -21,7 +21,7 @@ spec:
     # ⚠️ 실제 petclinic-gitops Repository URL로 변경
     repoURL: https://github.com/ParkSeJin0514/petclinic-gitops.git
     targetRevision: main
-    path: "."
+    path: "overlays/aws"
   destination:
     server: https://kubernetes.default.svc
     namespace: petclinic

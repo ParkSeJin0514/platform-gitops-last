@@ -20,7 +20,7 @@ spec:
   source:
     repoURL: https://github.com/ParkSeJin0514/petclinic-gitops.git
     targetRevision: main
-    path: "."
+    path: "overlays/gcp"
   destination:
     server: https://kubernetes.default.svc
     namespace: petclinic
