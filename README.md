@@ -63,6 +63,41 @@ platform-gitops-last/
 | **Secrets** | External Secrets (AWS SM) | External Secrets (GCP SM) | Workload Identity |
 | **Ingress** | ALB Ingress | GKE Ingress | 각 클라우드 네이티브 |
 
+## 🎯 Karpenter 설정
+
+### NodePool 구성
+
+```yaml
+requirements:
+  - key: kubernetes.io/arch
+    values: [amd64]
+  - key: karpenter.sh/capacity-type
+    values: [spot, on-demand]       # Spot 우선, On-Demand fallback
+  - key: karpenter.k8s.aws/instance-category
+    values: [t]                      # t 시리즈 (비용 효율)
+  - key: karpenter.k8s.aws/instance-size
+    values: [medium, large, xlarge, 2xlarge]
+  - key: topology.kubernetes.io/zone
+    values: [ap-northeast-2a, ap-northeast-2b]  # 멀티 AZ 분산
+```
+
+### EC2NodeClass 구성
+
+| 설정 | 값 | 설명 |
+|------|-----|------|
+| AMI | AL2023@latest | Amazon Linux 2023 EKS 최적화 |
+| EBS | gp3, 30GB | 암호화 활성화 |
+| IMDS | IMDSv2 필수 | 보안 강화 |
+
+### 서브넷 IP 관리
+
+> **주의**: /24 서브넷에서는 Secondary IP 모드 사용 권장
+
+| 모드 | 서브넷 크기 | 노드당 최대 Pod |
+|------|-------------|-----------------|
+| Secondary IP | /24 이상 | 인스턴스별 상이 (t3.medium: 17) |
+| Prefix Delegation | /20 이상 | 110 |
+
 ## 📊 Sync Wave 순서
 
 ### AWS
