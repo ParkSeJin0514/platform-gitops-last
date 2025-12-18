@@ -1,5 +1,5 @@
 # ============================================================================
-# platform-gitops/apps/platform-apps.yaml
+# platform-gitops-last/aws/apps/platform-apps.yaml
 # ============================================================================
 # Platform 컴포넌트들을 관리하는 ApplicationSet
 # Sync Wave를 사용하여 배포 순서 제어:
@@ -25,16 +25,16 @@ spec:
         elements:
           - name: alb-controller
             namespace: kube-system
-            path: platform/alb-controller
+            path: aws/platform/alb-controller
           - name: efs-csi-driver
             namespace: kube-system
-            path: platform/efs-csi-driver
+            path: aws/platform/efs-csi-driver
           - name: external-secrets
             namespace: external-secrets
-            path: platform/external-secrets
+            path: aws/platform/external-secrets
           - name: metrics-server
             namespace: kube-system
-            path: platform/metrics-server
+            path: aws/platform/metrics-server
   template:
     metadata:
       name: '{{name}}'
@@ -81,7 +81,7 @@ spec:
   source:
     repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
-    path: platform/karpenter
+    path: aws/platform/karpenter
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
@@ -115,7 +115,7 @@ spec:
   source:
     repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
-    path: platform/karpenter-config
+    path: aws/platform/karpenter-config
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
@@ -143,7 +143,7 @@ spec:
         elements:
           - name: argocd-ingress
             namespace: argocd
-            path: platform/argocd-ingress
+            path: aws/platform/argocd-ingress
   template:
     metadata:
       name: '{{name}}'
