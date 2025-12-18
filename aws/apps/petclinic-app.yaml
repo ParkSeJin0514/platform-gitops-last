@@ -34,7 +34,12 @@ spec:
       - RespectIgnoreDifferences=true
 
   # ExternalSecret이 생성한 Secret은 ArgoCD가 관리하지 않음 (ESO 전담)
+  # HPA가 관리하는 Deployment replicas는 ArgoCD가 무시 (HPA 전담)
   ignoreDifferences:
     - group: ""
       kind: Secret
       name: petclinic-db-secret
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
