@@ -28,7 +28,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops-test.git
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
     path: gcp/platform/external-secrets
   destination:
@@ -59,7 +59,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops-test.git
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
     path: gcp/platform/argocd-ingress
   destination:
