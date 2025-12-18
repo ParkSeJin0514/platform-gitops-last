@@ -1,0 +1,17 @@
+# ============================================================================
+# Metrics Server Helm Chart
+# ============================================================================
+# HPA (Horizontal Pod Autoscaler)를 위한 메트릭 수집 서버
+# EKS에서 HPA가 CPU/Memory 메트릭을 조회할 수 있도록 함
+# ============================================================================
+apiVersion: v2
+name: metrics-server
+description: Metrics Server for Kubernetes HPA
+type: application
+version: 0.1.0
+appVersion: "0.7.0"
+
+dependencies:
+  - name: metrics-server
+    version: 3.12.0
+    repository: https://kubernetes-sigs.github.io/metrics-server/

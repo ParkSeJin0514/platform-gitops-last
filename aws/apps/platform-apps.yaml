@@ -32,6 +32,9 @@ spec:
           - name: external-secrets
             namespace: external-secrets
             path: platform/external-secrets
+          - name: metrics-server
+            namespace: kube-system
+            path: platform/metrics-server
   template:
     metadata:
       name: '{{name}}'

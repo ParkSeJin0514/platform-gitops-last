@@ -1,0 +1,50 @@
+# ============================================================================
+# Metrics Server Values
+# ============================================================================
+# HPA가 Pod/Node 메트릭을 조회할 수 있도록 Metrics API 제공
+# ============================================================================
+
+metrics-server:
+  # Replica 설정 (HA 구성)
+  replicas: 2
+
+  # 리소스 설정
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 200m
+      memory: 400Mi
+
+  # API Service 설정
+  apiService:
+    create: true
+    insecureSkipTLSVerify: true
+
+  # 추가 arguments
+  args:
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
+
+  # Pod Disruption Budget
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  # Node Affinity - System 노드에서 실행
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: node-role
+                operator: In
+                values:
+                  - system
+
+  # Tolerations
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
