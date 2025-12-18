@@ -43,10 +43,6 @@ spec:
     httpPutResponseHopLimit: 2
     httpTokens: required
 
-  # Kubelet 설정 - Prefix Delegation을 위한 maxPods 증가
-  kubelet:
-    maxPods: 110
-
   # 태그
   tags:
     Name: "{{ .Values.clusterName }}-karpenter-node"
