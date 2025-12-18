@@ -45,7 +45,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+        repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
         targetRevision: main
         path: '{{path}}'
       destination:
@@ -79,7 +79,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
     path: platform/karpenter
   destination:
@@ -113,7 +113,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
     path: platform/karpenter-config
   destination:
@@ -154,7 +154,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/ParkSeJin0514/platform-gitops.git
+        repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
         targetRevision: main
         path: '{{path}}'
       destination:
