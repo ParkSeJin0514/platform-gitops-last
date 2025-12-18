@@ -27,7 +27,7 @@ ArgoCD App-of-Apps 패턴을 사용한 멀티 클라우드 GitOps 매니페스�
 ## 📁 디렉토리 구조
 
 ```
-platform-gitops-test/
+platform-gitops-last/
 ├── aws/                          # AWS Platform Components
 │   ├── apps/
 │   │   ├── platform-apps.yaml   # Platform ApplicationSet
@@ -160,6 +160,6 @@ asia-northeast3-docker.pkg.dev/kdt2-final-project-t1/petclinic-msa/petclinic-*
 
 | 저장소 | 설명 |
 |--------|------|
-| **platform-dev-test** | Terraform/Terragrunt IaC 코드 (EKS, GKE, VPC) |
+| **platform-dev-last** | Terraform/Terragrunt IaC 코드 (EKS, GKE, VPC) |
 | **petclinic-gitops** | PetClinic 애플리케이션 Kubernetes 매니페스트 |
 | **petclinic-dev** | PetClinic 소스 코드 + Multi-Cloud CI/CD |

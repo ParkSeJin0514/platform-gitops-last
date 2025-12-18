@@ -1,5 +1,5 @@
 # ============================================================================
-# platform-gitops-test/gcp/platform/external-secrets/values.yaml
+# platform-gitops-last/gcp/platform/external-secrets/values.yaml
 # ============================================================================
 # GCP Secret Manager 연결을 위한 External Secrets 설정
 # Workload Identity를 사용하여 GCP Secret Manager에 접근
