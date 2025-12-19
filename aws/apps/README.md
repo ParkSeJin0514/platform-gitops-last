@@ -1,13 +1,26 @@
-# ============================================================================
-# platform-gitops/apps/root-application.yaml
-# ============================================================================
-# App of Apps 패턴의 루트 Application
-# 이 파일은 03-bootstrap에서 kubectl_manifest로 배포됩니다.
-# 여기 apps/ 디렉토리의 다른 Application들을 자동으로 배포합니다.
-# ============================================================================
-# ⚠️ 이 파일은 참고용입니다. 실제 root-app은 Terraform에서 생성됩니다.
-# ============================================================================
+# AWS Apps Directory
 
-# 이 디렉토리에 추가할 Application 파일들:
-# - platform-apps.yaml   (Platform 컴포넌트)
-# - application-apps.yaml (애플리케이션)
+ArgoCD App-of-Apps 패턴의 Application 정의 파일들
+
+## 파일 구조
+
+| 파일 | 설명 |
+|------|------|
+| `platform-apps.yaml` | Platform 컴포넌트 (ALB Controller, Karpenter 등) |
+| `petclinic-app.yaml` | PetClinic 애플리케이션 |
+
+## 동작 방식
+
+1. Terraform Bootstrap에서 `root-app` 생성
+2. `root-app`이 이 디렉토리의 Application 파일들을 감지
+3. ArgoCD가 각 Application을 자동 배포
+
+## Sync Wave 순서
+
+```
+Wave 1  → ALB Controller, EFS CSI Driver, External Secrets
+Wave 5  → Karpenter Controller
+Wave 6  → Karpenter Config (NodePool, EC2NodeClass)
+Wave 10 → ArgoCD Ingress
+Wave 15 → PetClinic Application
+```
