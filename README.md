@@ -85,7 +85,7 @@ requirements:
 
 | 설정 | 값 | 설명 |
 |------|-----|------|
-| AMI | AL2023@latest | Amazon Linux 2023 EKS 최적화 |
+| AMI | AL2@latest | Amazon Linux 2 EKS 최적화 (AL2023은 nodeadm 호환성 이슈) |
 | EBS | gp3, 30GB | 암호화 활성화 |
 | IMDS | IMDSv2 필수 | 보안 강화 |
 

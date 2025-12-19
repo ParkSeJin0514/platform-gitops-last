@@ -8,9 +8,9 @@ metadata:
   annotations:
     kubernetes.io/description: "Default EC2NodeClass for general workloads"
 spec:
-  # AMI 선택 - AL2023 EKS 최적화
+  # AMI 선택 - AL2 EKS 최적화 (AL2023은 nodeadm 호환성 이슈)
   amiSelectorTerms:
-    - alias: al2023@latest
+    - alias: al2@latest
 
   # IAM Role (Terraform에서 생성)
   role: {{ .Values.ec2NodeClass.roleName }}
