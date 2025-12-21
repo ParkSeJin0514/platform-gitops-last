@@ -51,16 +51,6 @@ spec:
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'
-      # Webhook이 자동 생성하는 caBundle 무시
-      ignoreDifferences:
-        - group: admissionregistration.k8s.io
-          kind: ValidatingWebhookConfiguration
-          jsonPointers:
-            - /webhooks/0/clientConfig/caBundle
-        - group: admissionregistration.k8s.io
-          kind: MutatingWebhookConfiguration
-          jsonPointers:
-            - /webhooks/0/clientConfig/caBundle
       syncPolicy:
         automated:
           prune: true
