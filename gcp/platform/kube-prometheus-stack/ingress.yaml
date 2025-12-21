@@ -1,0 +1,117 @@
+# ============================================================================
+# GKE Ingress for kube-prometheus-stack
+# ============================================================================
+# GCE Load Balancer를 사용하여 Grafana, Prometheus, AlertManager 노출
+# ============================================================================
+
+---
+# Grafana Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cluster-grafana-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: gce
+spec:
+  ingressClassName: gce
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-grafana
+                port:
+                  number: 80
+---
+# Prometheus Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cluster-prometheus-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: gce
+spec:
+  ingressClassName: gce
+  rules:
+    - http:
+        paths:
+          - path: /prometheus
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-kube-prome-prometheus
+                port:
+                  number: 9090
+---
+# AlertManager Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cluster-alertmanager-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: gce
+spec:
+  ingressClassName: gce
+  rules:
+    - http:
+        paths:
+          - path: /alertmanager
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-kube-prome-alertmanager
+                port:
+                  number: 9093
+---
+# BackendConfig for Grafana Health Check
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: grafana-cluster-backend-config
+  namespace: monitoring
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /api/health
+    port: 3000
+---
+# BackendConfig for Prometheus Health Check
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: prometheus-cluster-backend-config
+  namespace: monitoring
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /prometheus/-/healthy
+    port: 9090
+---
+# BackendConfig for AlertManager Health Check
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: alertmanager-cluster-backend-config
+  namespace: monitoring
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /alertmanager/-/healthy
+    port: 9093

@@ -9,6 +9,7 @@
 #
 # Sync Wave:
 #   Wave 1: External Secrets (인프라)
+#   Wave 5: kube-prometheus-stack (클러스터 모니터링)
 #   Wave 10: ArgoCD Ingress
 # ============================================================================
 
@@ -34,6 +35,37 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: external-secrets
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+
+---
+# ============================================================================
+# Wave 5: kube-prometheus-stack (클러스터 모니터링)
+# ============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+  labels:
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
+    targetRevision: main
+    path: gcp/platform/kube-prometheus-stack
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true
