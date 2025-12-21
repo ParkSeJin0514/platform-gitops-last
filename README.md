@@ -42,7 +42,7 @@ platform-gitops-last/
 │
 ├── gcp/                          # GCP Platform Components
 │   ├── apps/
-│   │   ├── platform-apps.yaml   # Platform Applications
+│   │   ├── platform-apps.yaml   # Platform ApplicationSet
 │   │   └── petclinic-app.yaml   # PetClinic Application
 │   └── platform/
 │       ├── external-secrets/    # GCP Secret Manager
@@ -103,21 +103,24 @@ requirements:
 
 ### AWS
 ```
-Wave 1  → ALB Controller, EFS CSI Driver, External Secrets
+Wave 1  → platform-infra (ALB Controller, EFS CSI Driver, External Secrets, Metrics Server)
 Wave 5  → Karpenter Controller
 Wave 6  → Karpenter Config (NodePool, EC2NodeClass)
-Wave 10 → ArgoCD Ingress
+Wave 10 → platform-ingress (ArgoCD Ingress)
 Wave 15 → PetClinic Application
 ```
 
 ### GCP
 ```
-Wave 1  → External Secrets
-Wave 10 → ArgoCD Ingress
+Wave 1  → platform-infra (External Secrets)
+Wave 10 → platform-ingress (ArgoCD Ingress)
 Wave 15 → PetClinic Application
 ```
 
-> **Note**: kube-prometheus-stack은 petclinic-gitops에서 관리 (AWS와 동일한 구조)
+> **Note**:
+> - AWS/GCP 모두 동일한 ApplicationSet 구조 사용 (platform-infra, platform-ingress)
+> - kube-prometheus-stack은 petclinic-gitops에서 관리
+> - GCP는 GKE Autopilot이 ALB Controller, Karpenter, Metrics Server 기능을 기본 제공
 
 ## 🔐 External Secrets 설정
 
