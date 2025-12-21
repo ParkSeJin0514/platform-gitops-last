@@ -46,6 +46,7 @@ platform-gitops-last/
 │   │   └── petclinic-app.yaml   # PetClinic Application
 │   └── platform/
 │       ├── external-secrets/    # GCP Secret Manager
+│       ├── kube-prometheus-stack/ # 클러스터 모니터링 (Ingress)
 │       └── argocd-ingress/      # GKE Ingress
 │
 └── applications/                 # 공통 애플리케이션 설정
@@ -62,6 +63,7 @@ platform-gitops-last/
 | **Storage** | EFS CSI Driver | - | 필요시 Filestore |
 | **Secrets** | External Secrets (AWS SM) | External Secrets (GCP SM) | Workload Identity |
 | **Ingress** | ALB Ingress | GKE Ingress | 각 클라우드 네이티브 |
+| **Monitoring** | kube-prometheus-stack | kube-prometheus-stack | Helm 차트 |
 
 ## 🎯 Karpenter 설정
 
@@ -112,6 +114,8 @@ Wave 15 → PetClinic Application
 ### GCP
 ```
 Wave 1  → External Secrets
+Wave 5  → kube-prometheus-stack (Helm 차트)
+Wave 6  → kube-prometheus-ingress (GKE Ingress)
 Wave 10 → ArgoCD Ingress
 Wave 15 → PetClinic Application
 ```
