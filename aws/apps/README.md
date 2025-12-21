@@ -18,9 +18,16 @@ ArgoCD App-of-Apps 패턴의 Application 정의 파일들
 ## Sync Wave 순서
 
 ```
-Wave 1  → ALB Controller, EFS CSI Driver, External Secrets
+Wave 1  → platform-infra (ALB Controller, EFS CSI Driver, External Secrets, Metrics Server)
 Wave 5  → Karpenter Controller
 Wave 6  → Karpenter Config (NodePool, EC2NodeClass)
-Wave 10 → ArgoCD Ingress
+Wave 10 → platform-ingress (ArgoCD Ingress)
 Wave 15 → PetClinic Application
 ```
+
+## ApplicationSet 구조
+
+| ApplicationSet | 포함 컴포넌트 |
+|----------------|---------------|
+| `platform-infra` | ALB Controller, EFS CSI Driver, External Secrets, Metrics Server |
+| `platform-ingress` | ArgoCD Ingress |
