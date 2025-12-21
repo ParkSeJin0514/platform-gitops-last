@@ -1,7 +1,7 @@
 # ============================================================================
 # platform-gitops-last/gcp/apps/platform-apps.yaml
 # ============================================================================
-# GCP Platform 컴포넌트 관리 ApplicationSet
+# GCP Platform 컴포넌트 관리
 # GKE Autopilot 환경에서는 다음이 불필요:
 #   - ALB Controller (GKE Ingress 사용)
 #   - EFS CSI Driver (필요시 GCS 또는 Filestore 사용)
@@ -9,8 +9,9 @@
 #
 # Sync Wave:
 #   Wave 1: External Secrets (인프라)
-#   Wave 5: kube-prometheus-stack (클러스터 모니터링)
 #   Wave 10: ArgoCD Ingress
+#
+# Note: kube-prometheus-stack은 petclinic-gitops에서 관리 (AWS와 동일)
 # ============================================================================
 
 # ============================================================================
@@ -42,161 +43,6 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-
----
-# ============================================================================
-# Wave 5: kube-prometheus-stack (클러스터 모니터링) - Helm Chart
-# ============================================================================
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: kube-prometheus-stack
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
-  labels:
-    app.kubernetes.io/part-of: platform
-    app.kubernetes.io/managed-by: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: "67.4.0"
-    helm:
-      releaseName: kube-prometheus
-      valuesObject:
-        prometheus:
-          prometheusSpec:
-            externalUrl: "/prometheus"
-            routePrefix: "/prometheus"
-            resources:
-              requests:
-                cpu: 200m
-                memory: 512Mi
-              limits:
-                cpu: 1000m
-                memory: 2Gi
-            retention: 7d
-            additionalScrapeConfigs:
-              - job_name: 'petclinic-config-server'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['config-server.petclinic.svc.cluster.local:8888']
-              - job_name: 'petclinic-discovery-server'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['discovery-server.petclinic.svc.cluster.local:8761']
-              - job_name: 'petclinic-customers-service'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['customers-service.petclinic.svc.cluster.local:8081']
-              - job_name: 'petclinic-visits-service'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['visits-service.petclinic.svc.cluster.local:8082']
-              - job_name: 'petclinic-vets-service'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['vets-service.petclinic.svc.cluster.local:8083']
-              - job_name: 'petclinic-api-gateway'
-                metrics_path: '/actuator/prometheus'
-                static_configs:
-                  - targets: ['api-gateway.petclinic.svc.cluster.local:8080']
-        grafana:
-          adminPassword: admin
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-          defaultDashboardsEnabled: true
-          sidecar:
-            dashboards:
-              enabled: true
-        alertmanager:
-          alertmanagerSpec:
-            externalUrl: "/alertmanager"
-            routePrefix: "/alertmanager"
-            resources:
-              requests:
-                cpu: 50m
-                memory: 64Mi
-              limits:
-                cpu: 200m
-                memory: 256Mi
-        nodeExporter:
-          enabled: true
-        kubeStateMetrics:
-          enabled: true
-        defaultRules:
-          create: true
-          rules:
-            alertmanager: true
-            etcd: false
-            general: true
-            k8s: true
-            kubeApiserver: true
-            kubeApiserverAvailability: true
-            kubeApiserverSlos: true
-            kubelet: true
-            kubeProxy: false
-            kubePrometheusGeneral: true
-            kubePrometheusNodeRecording: true
-            kubernetesApps: true
-            kubernetesResources: true
-            kubernetesStorage: true
-            kubernetesSystem: true
-            kubeScheduler: false
-            kubeStateMetrics: true
-            network: true
-            node: true
-            nodeExporterAlerting: true
-            nodeExporterRecording: true
-            prometheus: true
-            prometheusOperator: true
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: monitoring
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
-
----
-# ============================================================================
-# Wave 6: kube-prometheus-stack Ingress (GKE Ingress)
-# ============================================================================
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: kube-prometheus-ingress
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "6"
-  labels:
-    app.kubernetes.io/part-of: platform
-    app.kubernetes.io/managed-by: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
-    targetRevision: main
-    path: gcp/platform/kube-prometheus-stack
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: monitoring
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
 
 ---
 # ============================================================================
