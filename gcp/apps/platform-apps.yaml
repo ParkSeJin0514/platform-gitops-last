@@ -1,85 +1,108 @@
 # ============================================================================
 # platform-gitops-last/gcp/apps/platform-apps.yaml
 # ============================================================================
-# GCP Platform 컴포넌트 관리
-# GKE Autopilot 환경에서는 다음이 불필요:
-#   - ALB Controller (GKE Ingress 사용)
-#   - EFS CSI Driver (필요시 GCS 또는 Filestore 사용)
-#   - Karpenter (Autopilot 자동 스케일링)
-#
-# Sync Wave:
+# Platform 컴포넌트들을 관리하는 ApplicationSet
+# Sync Wave를 사용하여 배포 순서 제어:
 #   Wave 1: External Secrets (인프라)
-#   Wave 10: ArgoCD Ingress
+#   Wave 10: ArgoCD Ingress (GKE Ingress)
+#
+# GKE Autopilot 환경에서는 다음이 불필요:
+#   - ALB Controller (GKE Ingress 기본 제공)
+#   - EFS CSI Driver (필요시 Filestore 사용)
+#   - Karpenter (Autopilot 자동 스케일링)
+#   - Metrics Server (GKE 기본 제공)
 #
 # Note: kube-prometheus-stack은 petclinic-gitops에서 관리 (AWS와 동일)
 # ============================================================================
 
 # ============================================================================
-# Wave 1: External Secrets Operator
+# Wave 1: 인프라 컴포넌트 (먼저 배포)
 # ============================================================================
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: external-secrets
+  name: platform-infra
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "1"
-  labels:
-    app.kubernetes.io/part-of: platform
-    app.kubernetes.io/managed-by: argocd
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
-    targetRevision: main
-    path: gcp/platform/external-secrets
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: external-secrets
-  # Webhook이 자동 생성하는 caBundle 무시
-  ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      jsonPointers:
-        - /webhooks/0/clientConfig/caBundle
-    - group: admissionregistration.k8s.io
-      kind: MutatingWebhookConfiguration
-      jsonPointers:
-        - /webhooks/0/clientConfig/caBundle
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
+  generators:
+    - list:
+        elements:
+          - name: external-secrets
+            namespace: external-secrets
+            path: gcp/platform/external-secrets
+  template:
+    metadata:
+      name: '{{name}}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/part-of: platform
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      # Webhook이 자동 생성하는 caBundle 무시
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          jsonPointers:
+            - /webhooks/0/clientConfig/caBundle
+        - group: admissionregistration.k8s.io
+          kind: MutatingWebhookConfiguration
+          jsonPointers:
+            - /webhooks/0/clientConfig/caBundle
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
 
 ---
 # ============================================================================
-# Wave 10: ArgoCD Ingress (GKE Ingress)
+# Wave 10: Ingress (GKE Ingress)
 # ============================================================================
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: argocd-ingress
+  name: platform-ingress
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
-  labels:
-    app.kubernetes.io/part-of: platform
-    app.kubernetes.io/managed-by: argocd
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
-    targetRevision: main
-    path: gcp/platform/argocd-ingress
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+  generators:
+    - list:
+        elements:
+          - name: argocd-ingress
+            namespace: argocd
+            path: gcp/platform/argocd-ingress
+  template:
+    metadata:
+      name: '{{name}}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/part-of: platform
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
