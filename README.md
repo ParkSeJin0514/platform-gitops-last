@@ -122,6 +122,32 @@ Wave 15 → PetClinic Application
 > - kube-prometheus-stack은 petclinic-gitops에서 관리
 > - GCP는 GKE Autopilot이 ALB Controller, Karpenter, Metrics Server 기능을 기본 제공
 
+### GCP ignoreDifferences 설정
+
+GCP의 External Secrets Application에서 OutOfSync 방지를 위해 `ignoreDifferences` 설정:
+
+```yaml
+ignoreDifferences:
+  # Webhook caBundle (cert-controller가 자동 생성)
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    jsonPointers:
+      - /webhooks/0/clientConfig/caBundle
+      - /webhooks/1/clientConfig/caBundle
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    jsonPointers:
+      - /webhooks/0/clientConfig/caBundle
+      - /webhooks/1/clientConfig/caBundle
+  # Deployment resources (Kubernetes 기본값)
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/template/spec/containers/0/resources
+```
+
+> **원인**: External Secrets의 cert-controller가 Webhook caBundle을 자동 생성하고, Kubernetes가 Deployment에 빈 `resources: {}` 필드를 추가함
+
 ## 🔐 External Secrets 설정
 
 ### AWS (IRSA)
