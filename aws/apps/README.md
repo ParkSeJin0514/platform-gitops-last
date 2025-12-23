@@ -9,12 +9,6 @@ ArgoCD App-of-Apps 패턴의 Application 정의 파일들
 | `platform-apps.yaml` | Platform 컴포넌트 (ALB Controller, Karpenter 등) |
 | `petclinic-app.yaml` | PetClinic 애플리케이션 |
 
-## 동작 방식
-
-1. Terraform Bootstrap에서 `root-app` 생성
-2. `root-app`이 이 디렉토리의 Application 파일들을 감지
-3. ArgoCD가 각 Application을 자동 배포
-
 ## Sync Wave 순서
 
 ```
@@ -25,9 +19,4 @@ Wave 10 → platform-ingress (ArgoCD Ingress)
 Wave 15 → PetClinic Application
 ```
 
-## ApplicationSet 구조
-
-| ApplicationSet | 포함 컴포넌트 |
-|----------------|---------------|
-| `platform-infra` | ALB Controller, EFS CSI Driver, External Secrets, Metrics Server |
-| `platform-ingress` | ArgoCD Ingress |
+> 상세 설정은 루트 [README.md](../../README.md) 참조
