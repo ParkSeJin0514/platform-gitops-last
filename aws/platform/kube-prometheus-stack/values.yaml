@@ -1,0 +1,68 @@
+# ============================================================================
+# kube-prometheus-stack values
+# ============================================================================
+
+kube-prometheus-stack:
+  # Prometheus 설정
+  prometheus:
+    prometheusSpec:
+      routePrefix: /prometheus
+      retention: 7d
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+
+  # AlertManager 설정
+  alertmanager:
+    alertmanagerSpec:
+      routePrefix: /alertmanager
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+
+  # Grafana 설정
+  grafana:
+    adminPassword: admin
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    defaultDashboardsEnabled: true
+    sidecar:
+      dashboards:
+        enabled: true
+
+  # Node Exporter
+  nodeExporter:
+    enabled: true
+
+  # Kube State Metrics
+  kubeStateMetrics:
+    enabled: true
+
+  # EKS에서 접근 불가능한 컴포넌트 비활성화
+  defaultRules:
+    rules:
+      etcd: false
+      kubeProxy: false
+      kubeScheduler: false
+
+  kubeEtcd:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeProxy:
+    enabled: false

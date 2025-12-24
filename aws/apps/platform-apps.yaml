@@ -3,7 +3,8 @@
 # ============================================================================
 # Platform 컴포넌트들을 관리하는 ApplicationSet
 # Sync Wave를 사용하여 배포 순서 제어:
-#   Wave 1: ALB Controller, EFS CSI Driver, External Secrets (인프라)
+#   Wave 1: ALB Controller, EFS CSI Driver, External Secrets, Metrics Server (인프라)
+#   Wave 2: kube-prometheus-stack (모니터링)
 #   Wave 5: Karpenter Controller (노드 오토스케일러)
 #   Wave 6: Karpenter Config (NodePool, EC2NodeClass)
 #   Wave 10: ArgoCD Ingress (ALB Controller 설치 완료 후)
@@ -58,6 +59,39 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
+
+---
+# ============================================================================
+# Wave 2: kube-prometheus-stack (모니터링)
+# ============================================================================
+# Prometheus, Grafana, AlertManager 배포
+# ============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
+    targetRevision: main
+    path: aws/platform/kube-prometheus-stack
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
 
 ---
 # ============================================================================

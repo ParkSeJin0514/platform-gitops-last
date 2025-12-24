@@ -18,6 +18,7 @@ ArgoCD App-of-Apps 패턴을 사용한 멀티 클라우드 GitOps 매니페스�
 │  ├── alb-controller/            │  ├── external-secrets/            │
 │  ├── efs-csi-driver/            │  └── argocd-ingress/              │
 │  ├── external-secrets/          │                                   │
+│  ├── kube-prometheus-stack/     │                                   │
 │  ├── karpenter/                 │                                   │
 │  ├── karpenter-config/          │                                   │
 │  └── argocd-ingress/            │                                   │
@@ -36,6 +37,7 @@ platform-gitops-last/
 │       ├── alb-controller/      # AWS ALB Controller
 │       ├── efs-csi-driver/      # AWS EFS CSI Driver
 │       ├── external-secrets/    # AWS Secrets Manager
+│       ├── kube-prometheus-stack/ # Prometheus, Grafana, AlertManager
 │       ├── karpenter/           # Karpenter Controller
 │       ├── karpenter-config/    # NodePool, EC2NodeClass
 │       └── argocd-ingress/      # ALB Ingress
@@ -62,7 +64,7 @@ platform-gitops-last/
 | **Storage** | EFS CSI Driver | - | 필요시 Filestore |
 | **Secrets** | External Secrets (AWS SM) | External Secrets (GCP SM) | Workload Identity |
 | **Ingress** | ALB Ingress | GKE Ingress | 각 클라우드 네이티브 |
-| **Monitoring** | kube-prometheus-stack | kube-prometheus-stack | petclinic-gitops에서 관리 |
+| **Monitoring** | kube-prometheus-stack | kube-prometheus-stack | Wave 2에서 배포 |
 
 ## 🎯 Karpenter 설정
 
