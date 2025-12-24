@@ -3,6 +3,16 @@
 # ============================================================================
 
 kube-prometheus-stack:
+  # =========================================================================
+  # Prometheus Admission Webhook 비활성화
+  # =========================================================================
+  # admission-create와 admission-patch Job 순서 문제로 인한 오류 방지
+  # ArgoCD 배포 시 Job 간 의존성이 보장되지 않아 CrashLoopBackOff 발생할 수 있음
+  # Admission webhook은 Prometheus CRD 리소스 검증용으로 필수는 아님
+  # =========================================================================
+  prometheusOperator:
+    admissionWebhooks:
+      enabled: false
   # Prometheus 설정
   prometheus:
     prometheusSpec:
