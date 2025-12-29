@@ -13,6 +13,8 @@ kube-prometheus-stack:
   prometheusOperator:
     admissionWebhooks:
       enabled: false
+    tls:
+      enabled: false
   # Prometheus 설정
   prometheus:
     prometheusSpec:
