@@ -82,6 +82,9 @@ spec:
     repoURL: https://github.com/ParkSeJin0514/platform-gitops-last.git
     targetRevision: main
     path: aws/platform/kube-prometheus-stack
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: petclinic
