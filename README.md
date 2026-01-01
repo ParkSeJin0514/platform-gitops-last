@@ -84,6 +84,16 @@ requirements:
     values: [ap-northeast-2a, ap-northeast-2b]  # 멀티 AZ 분산
 ```
 
+### Disruption (노드 통합) 설정
+
+| 설정 | 값 | 설명 |
+|------|-----|------|
+| consolidationPolicy | WhenEmptyOrUnderutilized | 빈 노드 또는 저활용 노드 통합 |
+| consolidateAfter | 5m | 통합 대기 시간 |
+| budgets | 20% | 동시 중단 가능 노드 비율 |
+
+> **참고**: node-exporter DaemonSet에 `karpenter.sh/do-not-disrupt: "true"` annotation 적용하여 통합 계산에서 제외
+
 ### EC2NodeClass 구성
 
 | 설정 | 값 | 설명 |

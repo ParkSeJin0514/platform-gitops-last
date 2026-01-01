@@ -56,8 +56,11 @@ kube-prometheus-stack:
         enabled: true
 
   # Node Exporter
-  nodeExporter:
-    enabled: true
+  prometheus-node-exporter:
+    tolerations:
+      - operator: Exists
+    podAnnotations:
+      karpenter.sh/do-not-disrupt: "true"
 
   # Kube State Metrics
   kubeStateMetrics:

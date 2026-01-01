@@ -30,7 +30,7 @@ nodePool:
       memory: 200Gi
     
     disruption:
-      consolidationPolicy: WhenEmpty
+      consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 5m
       budgets:
         - nodes: "20%"
