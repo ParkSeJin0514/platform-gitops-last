@@ -220,6 +220,50 @@ ArgoCD는 자동으로 `platform-apps.yaml`과 `petclinic-app.yaml`을 동기화
 2. DNS를 AWS로 전환
 3. GCP 리소스 정리 (선택사항)
 
+## 🔍 트러블슈팅
+
+### kube-prometheus-stack Sync 에러 (nil pointer dereference)
+
+**증상**: ArgoCD에서 `runtime error: invalid memory address or nil pointer dereference` 에러 발생
+
+**원인**: ArgoCD `gitops-engine`의 `structuredMergeDiff` 함수에서 `ServerSideApply` 옵션 사용 시 버그 발생
+
+**해결**:
+1. Helm chart dependency 파일을 Git에 커밋:
+   ```bash
+   cd aws/platform/kube-prometheus-stack
+   helm dependency update
+   git add Chart.lock charts/
+   git commit -m "Add helm dependencies"
+   ```
+
+2. Application 정의에 helm 설정 추가:
+   ```yaml
+   source:
+     path: aws/platform/kube-prometheus-stack
+     helm:
+       valueFiles:
+         - values.yaml
+   ```
+
+3. `ServerSideApply=true`를 `RespectIgnoreDifferences=true`로 변경:
+   ```yaml
+   syncOptions:
+     - CreateNamespace=true
+     - RespectIgnoreDifferences=true  # ServerSideApply 대신 사용
+   ```
+
+### ArgoCD 캐시 문제
+
+ArgoCD가 변경사항을 감지하지 못할 때:
+```bash
+# repo-server 재시작
+kubectl delete pod -n argocd -l app.kubernetes.io/name=argocd-repo-server
+
+# Hard Refresh
+kubectl annotate app <app-name> -n argocd argocd.argoproj.io/refresh=hard --overwrite
+```
+
 ## 🐳 컨테이너 레지스트리
 
 | 클라우드 | 레지스트리 | 리전 |
