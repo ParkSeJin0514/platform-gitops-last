@@ -95,6 +95,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
+      - ServerSideApply=true
 
 ---
 # ============================================================================
