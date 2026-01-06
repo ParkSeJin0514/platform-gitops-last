@@ -1,0 +1,35 @@
+# ============================================================================
+# Argo Rollouts Values
+# ============================================================================
+# Blue-Green 및 Canary 배포를 위한 설정
+# ============================================================================
+
+argo-rollouts:
+  # Controller 설정
+  controller:
+    replicas: 1
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+
+  # Dashboard 활성화
+  dashboard:
+    enabled: true
+    service:
+      type: ClusterIP
+      port: 3100
+
+  # Metrics 설정 (Prometheus 연동)
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: monitoring
+
+  # RBAC 설정
+  clusterInstall: true
